@@ -2,22 +2,27 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 
-class ChatClient
+class TCPChatClient : IChatClient
 {
+    public event Action<ChatMessage> OnMessageReceived;
+
     private TcpClient _client;
     private Thread _thread;
-    public event Action<string> OnMessageReceived;
+    private string _userName;
 
-    public void Connect(string ip, int port)
+
+    public void Connect(ConnectionConfig config)
     {
         _client = new TcpClient();
-        _client.Connect(ip, port);
+        _client.Connect(config.Ip, config.Port);
         _thread = new Thread(ListenForMessages)
         {
             IsBackground = true,
         };
         _thread.Start();
+        _userName = config.UserName;
     }
 
     public void ListenForMessages()
@@ -49,7 +54,8 @@ class ChatClient
                     totalRead += bytesRead;
                 }
 
-                string message = Encoding.UTF8.GetString(messageBuffer);
+                string jsonMessage = Encoding.UTF8.GetString(messageBuffer);
+                ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
                 OnMessageReceived?.Invoke(message);
             }
         }
@@ -60,14 +66,18 @@ class ChatClient
 
     }
 
-    public void SendMessage(string message)
+    public ChatMessage SendMessage(string content, string replyToId)
     {
-        byte[] bytesMessage = Encoding.UTF8.GetBytes(message);
+        ChatMessage message = new(_userName, content, replyToId);
+        string jsonMessage = JsonUtility.ToJson(message);
+        byte[] bytesMessage = Encoding.UTF8.GetBytes(jsonMessage);
         byte[] lengthBytes = BitConverter.GetBytes(bytesMessage.Length);
 
         NetworkStream stream = _client.GetStream();
         stream.Write(lengthBytes, 0, lengthBytes.Length);
         stream.Write(bytesMessage, 0, bytesMessage.Length);
+
+        return message;
     }
 
     public void Disconnect()

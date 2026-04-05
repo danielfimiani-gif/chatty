@@ -4,16 +4,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-class ChatServer
+class TCPChatServer : IChatServer
 {
     private TcpListener _listener;
     private List<TcpClient> _tcpClients;
     private Thread _thread;
 
-    public void Start(int port)
+    public void Start(ConnectionConfig config)
     {
         _tcpClients = new List<TcpClient>();
-        _listener = new TcpListener(IPAddress.Any, port);
+        _listener = new TcpListener(IPAddress.Any, config.Port);
         _listener.Start();
 
         _thread = new(AcceptClients)

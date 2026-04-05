@@ -4,9 +4,10 @@ class ChatManager : MonoBehaviour
 {
     [SerializeField] private ChatUIController chatUIController;
     [SerializeField] private ConnectionUIController connectionUIController;
+    [SerializeField] private TransportProtocol transportProtocol;
 
-    private ChatClient _chatClient;
-    private ChatServer _chatServer;
+    private IChatClient _chatClient;
+    private IChatServer _chatServer;
 
     void Awake()
     {
@@ -24,16 +25,44 @@ class ChatManager : MonoBehaviour
     {
         if (config.IsHost())
         {
-            _chatServer = new ChatServer();
-            _chatServer.Start(config.Port);
+            _chatServer = CreateChatServer();
+            _chatServer.Start(config);
         }
 
 
-        _chatClient = new ChatClient();
-        _chatClient.Connect(config.Ip, config.Port);
+        _chatClient = CreateChatclient();
+        _chatClient.Connect(config);
 
         connectionUIController.gameObject.SetActive(false);
         chatUIController.gameObject.SetActive(true);
         chatUIController.Initialize(_chatClient);
+    }
+
+    private IChatServer CreateChatServer()
+    {
+        switch (transportProtocol)
+        {
+            case TransportProtocol.TCP:
+                return new TCPChatServer();
+            case TransportProtocol.UDP:
+                return new UDPChatServer();
+            default:
+                Debug.Log("Invalid Transport Protocol");
+                return null;
+        }
+    }
+
+    private IChatClient CreateChatclient()
+    {
+        switch (transportProtocol)
+        {
+            case TransportProtocol.TCP:
+                return new TCPChatClient();
+            case TransportProtocol.UDP:
+                return new UDPChatClient();
+            default:
+                Debug.Log("Invalid Transport Protocol");
+                return null;
+        }
     }
 }

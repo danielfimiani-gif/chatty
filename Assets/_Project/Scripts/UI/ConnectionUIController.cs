@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class ConnectionUIController : MonoBehaviour
 {
+    [SerializeField] private TMP_InputField userNameInputField;
     [SerializeField] private TMP_InputField ipInputField;
     [SerializeField] private TMP_InputField portInputField;
     [SerializeField] private Button hostButton;
@@ -24,6 +25,7 @@ public class ConnectionUIController : MonoBehaviour
     private void OnStartChatPressed(ConnectionMode mode)
     {
         string ip = "127.0.0.1";
+        string userName = "Anónimo";
 
         if (mode == ConnectionMode.Client)
             ip = ipInputField.text;
@@ -34,7 +36,10 @@ public class ConnectionUIController : MonoBehaviour
             return;
         }
 
-        ConnectionConfig config = new(ip, port, mode);
+        if (!string.IsNullOrEmpty(userNameInputField.text))
+            userName = userNameInputField.text;
+
+        ConnectionConfig config = new(userName, ip, port, mode);
         ChatEvents.OnChatStartRequested?.Invoke(config);
     }
 }
