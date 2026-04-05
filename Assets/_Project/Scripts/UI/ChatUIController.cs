@@ -9,7 +9,8 @@ class ChatUIController : MonoBehaviour
     [SerializeField] private TMP_InputField messageInput;
     [SerializeField] private Button sendButton;
     [SerializeField] private Transform content;
-    [SerializeField] private GameObject messagePrefab;
+    [SerializeField] private GameObject messagePrefabOwn;
+    [SerializeField] private GameObject messagePrefabOther;
     [SerializeField] private ScrollRect autoScroll;
     [SerializeField] private GameObject replyIndicator;
     [SerializeField] private Button cancelReplyButton;
@@ -19,12 +20,13 @@ class ChatUIController : MonoBehaviour
     private ConcurrentQueue<ChatMessage> _messageQueue = new();
     private Dictionary<string, ChatMessage> _messages = new();
     private string _replyToId = null;
+    private readonly bool _isOwn = true;
 
     void Update()
     {
         while (_messageQueue.TryDequeue(out ChatMessage message))
         {
-            AddMessageToUI(message);
+            AddMessageToUI(message, !_isOwn);
         }
     }
 
@@ -45,6 +47,7 @@ class ChatUIController : MonoBehaviour
         sendButton.onClick.AddListener(SendMessage);
         ChatEvents.OnReplyMessageRequested += HandleReplyMessage;
         cancelReplyButton.onClick.AddListener(HandleCancelReply);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
     }
 
     private void HandleMessageReceived(ChatMessage message)
@@ -52,16 +55,17 @@ class ChatUIController : MonoBehaviour
         _messageQueue.Enqueue(message);
     }
 
-    private void AddMessageToUI(ChatMessage message)
+    private void AddMessageToUI(ChatMessage message, bool isOwn)
     {
-        GameObject gameObject = Instantiate(messagePrefab, content);
-        MessageItem messageItem = gameObject.GetComponent<MessageItem>();
+        GameObject prefab = isOwn ? messagePrefabOwn : messagePrefabOther;
+        GameObject gameObject = Instantiate(prefab, content);
+        MessageItem messageItem = gameObject.GetComponentInChildren<MessageItem>();
 
         ChatMessage replyToMessage = null;
         if (!string.IsNullOrEmpty(message.ReplyToId))
             _messages.TryGetValue(message.ReplyToId, out replyToMessage);
 
-        messageItem.Setup(message, replyToMessage?.Format());
+        messageItem.Setup(message, replyToMessage?.Format(), isOwn);
         _messages[message.Id] = message;
     }
 
@@ -75,7 +79,7 @@ class ChatUIController : MonoBehaviour
         _replyToId = null;
         messageInput.text = "";
         replyIndicator.SetActive(false);
-        AddMessageToUI(message);
+        AddMessageToUI(message, _isOwn);
     }
 
     private void HandleReplyMessage(ChatMessage message)
