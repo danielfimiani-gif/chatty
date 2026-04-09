@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
+[RequireComponent(typeof(RectTransform), typeof(LayoutElement))]
 public class MessageItem : MonoBehaviour
 {
     [SerializeField] private GameObject replyBlock;
