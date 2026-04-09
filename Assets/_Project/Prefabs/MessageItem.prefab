@@ -103,7 +103,6 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -169,11 +168,11 @@ RectTransform:
   - {fileID: 3547658696458934369}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 983, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2682892734391913563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,8 +240,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 491.5, y: -50}
-  m_SizeDelta: {x: 943, y: 0}
+  m_AnchoredPosition: {x: 960, y: -25}
+  m_SizeDelta: {x: 1880, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8734412543077760207
 CanvasRenderer:
@@ -413,6 +412,7 @@ MonoBehaviour:
   replyBlock: {fileID: 8822125914240860032}
   replyText: {fileID: 6693253452120583799}
   messageText: {fileID: 9105140097120023905}
+  maxWidth: 1500
 --- !u!1 &6299834024654294242
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,7 +516,6 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

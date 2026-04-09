@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class MessageItem : MonoBehaviour
     [SerializeField] private GameObject replyBlock;
     [SerializeField] private TMP_Text replyText;
     [SerializeField] private TMP_Text messageText;
+    [SerializeField] private float maxWidth = 400f;
 
     private ChatMessage _chatMessage;
     private LayoutElement _bubbleLayout;
@@ -25,7 +27,13 @@ public class MessageItem : MonoBehaviour
         messageText.text = message.Format();
 
         float parentWidth = transform.parent.GetComponent<RectTransform>().rect.width;
-        _bubbleLayout.preferredWidth = parentWidth * 0.75f;
+        float desiredWidth = parentWidth * 0.75f;
+
+        float bubbleWidth = Mathf.Min(desiredWidth, maxWidth);
+        _bubbleLayout.preferredWidth = bubbleWidth;
+        _bubbleLayout.flexibleWidth = 0;
+
+        int remainingSpace = Mathf.RoundToInt(parentWidth - bubbleWidth - 40);
 
         if (!string.IsNullOrEmpty(replyPreview))
         {
@@ -42,14 +50,14 @@ public class MessageItem : MonoBehaviour
             if (isMine)
             {
                 _parentLayout.childAlignment = TextAnchor.MiddleRight;
-                _parentLayout.padding.left = 50;
+                _parentLayout.padding.left = remainingSpace;
                 _parentLayout.padding.right = 10;
             }
             else
             {
                 _parentLayout.childAlignment = TextAnchor.MiddleLeft;
                 _parentLayout.padding.left = 10;
-                _parentLayout.padding.right = 50;
+                _parentLayout.padding.right = remainingSpace;
             }
         }
 
